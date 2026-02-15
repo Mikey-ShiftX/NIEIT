@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>NIE Enterprise Student Portal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+/* ===== ENTERPRISE BASE ===== */
+body{
+margin:0;
+font-family:Segoe UI,Arial;
+background:#f2f4f7;
+color:#333;
+}
+
+.hidden{display:none}
+
+.container-main{
+max-width:1100px;
+margin:auto;
+}
+
+/* ===== LOGIN ===== */
+.login-wrap{
+display:flex;
+min-height:100vh;
+}
+
+.left{
+flex:2;
+background:#8ea8bb;
+padding:60px;
+color:#000;
+}
+
+.right{
+flex:1;
+background:#2b2e6e;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.login-card{
+background:#fff;
+padding:30px;
+width:320px;
+border-radius:6px;
+box-shadow:0 2px 8px rgba(0,0,0,0.15);
+}
+
+input,select{
+width:100%;
+padding:12px;
+margin-bottom:12px;
+font-size:16px;
+border:1px solid #ccc;
+border-radius:6px;
+box-sizing:border-box;
+}
+
+.dob{
+display:grid;
+grid-template-columns:1fr 1fr 1fr;
+gap:10px;
+}
+
+button{
+padding:10px;
+width:100%;
+background:#2b2e6e;
+color:#fff;
+border:none;
+border-radius:6px;
+font-size:15px;
+cursor:pointer;
+}
+
+/* ===== HEADER ===== */
+.topbar{
+background:#2b2e6e;
+color:#fff;
+padding:12px 20px;
+display:flex;
+justify-content:space-between;
+}
+
+.profile{
+background:#dcdcdc;
+display:flex;
+}
+
+.profile-left{
+background:#c42026;
+color:#fff;
+padding:18px;
+width:260px;
+font-weight:bold;
+}
+
+.profile-right{
+flex:1;
+padding:18px;
+text-align:right;
+font-size:14px;
+}
+
+/* ===== SUBJECT TABS ===== */
+.tab{
+background:#f5f5f5;
+border:1px solid #ddd;
+color:#222;
+font-size:13px;
+padding:10px;
+border-radius:4px;
+text-align:left;
+line-height:1.3;
+width:100%;
+}
+
+.tabs{
+background:#fff;
+border-bottom:1px solid #ddd;
+padding:10px;
+display:flex;
+flex-direction:column;
+gap:6px;
+}
+
+.tab.active{
+background:#fff;
+color:#c42026;
+border:1px solid #c42026;
+font-weight:600;
+}
+
+/* ===== CARDS ===== */
+.content{
+padding:15px;
+}
+
+.row{
+display:flex;
+gap:15px;
+flex-wrap:wrap;
+}
+
+.card{
+background:#fff;
+border:1px solid #ddd;
+padding:15px;
+flex:1;
+min-width:300px;
+box-shadow:0 1px 4px rgba(0,0,0,0.08);
+}
+
+/* ===== BADGES ===== */
+.badge-green{
+background:#1b8a3d;
+color:#fff;
+padding:4px 10px;
+font-size:12px;
+margin-right:10px;
+}
+
+.badge-red{
+background:#e60000;
+color:#fff;
+padding:4px 10px;
+font-size:12px;
+}
+
+/* ===== INFO STRIP ===== */
+.info{
+background:#f6f6f6;
+padding:10px;
+margin-top:10px;
+display:flex;
+gap:20px;
+flex-wrap:wrap;
+font-size:13px;
+}
+
+/* ===== MOBILE ===== */
+@media(max-width:768px){
+.login-wrap{flex-direction:column}
+.left{padding:30px;text-align:center}
+.profile{flex-direction:column}
+.profile-left{width:100%}
+.profile-right{text-align:left}
+.row{flex-direction:column}
+}
+/* ===== FIX GRAPH SIZE (Enterprise Stable) ===== */
+canvas{
+    width:100% !important;
+    max-height:260px;
+}
+
+/* Optional: better mobile look */
+@media(max-width:768px){
+    canvas{
+        max-height:220px;
+    }
+}
+
+.legend{
+margin-top:10px;
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+font-size:12px;
+}
+
+.legend-item{
+display:flex;
+align-items:center;
+gap:6px;
+background:#f6f6f6;
+padding:4px 8px;
+border-radius:4px;
+border:1px solid #ddd;
+}
+
+.legend-color{
+width:12px;
+height:12px;
+border-radius:2px;
+}
+
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginPage" class="login-wrap">
+<div class="left">
+<h2>The National Institute of Engineering</h2>
+<p>Enterprise Student Portal</p>
+</div>
+
+<div class="right">
+<div class="login-card">
+<h3>Login</h3>
+<input id="username" placeholder="USN">
+
+<div class="dob">
+<select id="day">
+<option disabled selected>Day</option>
+<script>
+for(let i=1;i<=31;i++){
+let v=i<10?"0"+i:i;
+document.write(`<option>${v}</option>`);
+}
+</script>
+</select>
+
+<select id="month">
+<option disabled selected>Month</option>
+<option>Jan</option><option>Feb</option><option>Mar</option>
+<option>Apr</option><option>May</option><option>Jun</option>
+<option>Jul</option><option>Aug</option><option>Sep</option>
+<option>Oct</option><option>Nov</option><option>Dec</option>
+</select>
+
+<select id="year">
+<option disabled selected>Year</option>
+<script>
+for(let y=2026;y>=1946;y--){
+document.write(`<option>${y}</option>`);
+}
+</script>
+</select>
+</div>
+
+<button onclick="login()">LOGIN</button>
+<p id="error" style="color:red"></p>
+</div>
+</div>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden container-main">
+
+<div class="topbar">
+NIE Enterprise Portal
+<div onclick="location.reload()" style="cursor:pointer">Logout</div>
+</div>
+
+<div class="profile">
+<div class="profile-left" id="studentName"></div>
+<div class="profile-right">
+<span id="studentUSN"></span><br>
+B.E – CSE<br>
+Last Updated: 07/02/2026
+</div>
+</div>
+
+<div class="tabs" id="tabs"></div>
+
+<div class="content">
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+<div class="row">
+<div class="card">
+<h4>CIE Overview</h4>
+<canvas id="overviewChart" height="200"></canvas>
+</div>
+
+<div class="card">
+<h4>Attendance</h4>
+<canvas id="attChart" height="200"></canvas>
+<div id="attLegend" class="legend"></div>
+</div>
+</div>
+</div>
+
+<!-- SUBJECT -->
+<div id="subjectPage" class="hidden">
+
+<div class="row">
+<div class="card" style="flex:2;display:flex;gap:15px;align-items:center">
+<img id="facultyImg" width="70" height="70" style="border-radius:50%">
+<div>
+<div id="faculty" style="font-weight:600"></div>
+<div id="subjectTitle" style="font-size:13px;color:#666"></div>
+</div>
+</div>
+
+<div class="card">
+<div style="margin-bottom:6px;font-weight:600">Internal Assessment</div>
+<span class="badge-green" id="cieBadge"></span>
+<span class="badge-red" id="attBadge"></span>
+</div>
+</div>
+
+<div class="info" id="infoRow"></div>
+
+<div class="card">
+<canvas id="subjectChart" height="220"></canvas>
+</div>
+
+</div>
+
+</div>
+</div>
+
+<script>
+
+/* ===== SUBJECT MASTER ===== */
+const subjectNames = {
+"1BMACS101":"Applied Mathematics – I for Computer Science & Engineering Stream",
+"1BPHCS102":"Applied Physics for Computer Science & Engineering Stream",
+"1BCEDCS103":"Computer Aided Engineering Drawing for CSE stream",
+"1BESC104C":"Introduction to Electronics & Communication Engineering",
+"1BEIT105":"Programming in C",
+"1BSKS106":"Soft Skills",
+"1BPOPL107":"C Programming Laboratory",
+"1BPRJ158":"Interdisciplinary Project-Based Learning",
+"1BSK109":"Samskrutika Kannada",
+"1BPHCSL102":"Applied Physics Laboratory for Computer Science & Engineering Stream"
+};
+
+/* ===== SAMPLE DATA ===== */
+const students = {
+
+/* ===================== KHUSHI ===================== */
+"2025CS0146":{
+dob:["31","Jan","2007"],
+name:"KHUSHI H",
+subjects:{
+"1BMACS101":{cie:11,att:94,marks:[12,18,7,4,22]},
+"1BPHCS102":{cie:32,att:96,marks:[15,20,8,6,25]},
+"1BCEDCS103":{cie:28,att:92,marks:[8,12,6,5,15]},
+"1BESC104C":{cie:40,att:95,marks:[10,14,6,7,20]},
+"1BEIT105":{cie:22,att:90,marks:[6,8,4,3,12]},
+"1BSKS106":{cie:45,att:98,marks:[10,12,9,8,20]},
+"1BPOPL107":{cie:30,att:93,marks:[8,10,5,6,16]},
+"1BPRJ158":{cie:55,att:100,marks:[18,20,9,10,26]},
+"1BSK109":{cie:26,att:91,marks:[7,9,5,4,14]},
+"1BPHCSL102":{cie:38,att:97,marks:[12,14,6,7,18]}
+}
+},
+
+/* ===================== HEMANTH ===================== */
+"2025CS0140":{
+dob:["15","Jan","2006"],
+name:"HEMANTH GOWDA DM",
+subjects:{
+"1BMACS101":{cie:18,att:90,marks:[15,20,8,6,24]},
+"1BPHCS102":{cie:28,att:92,marks:[12,18,6,5,20]},
+"1BCEDCS103":{cie:35,att:95,marks:[14,16,7,6,22]},
+"1BESC104C":{cie:30,att:89,marks:[10,12,6,5,18]},
+"1BEIT105":{cie:25,att:91,marks:[8,10,5,4,15]},
+"1BSKS106":{cie:42,att:97,marks:[10,11,9,8,19]},
+"1BPOPL107":{cie:26,att:90,marks:[7,9,5,4,14]},
+"1BPRJ158":{cie:50,att:98,marks:[16,18,8,9,24]},
+"1BSK109":{cie:20,att:89,marks:[6,8,4,3,12]},
+"1BPHCSL102":{cie:34,att:93,marks:[10,12,6,5,16]}
+}
+},
+
+/* ===================== MOHAK ===================== */
+"2025CS0096":{
+dob:["02","Dec","2007"],
+name:"MOHAK M",
+subjects:{
+"1BMACS101":{cie:14,att:91,marks:[10,16,6,5,18]},
+"1BPHCS102":{cie:36,att:94,marks:[16,22,9,6,26]},
+"1BCEDCS103":{cie:22,att:89,marks:[8,10,5,4,12]},
+"1BESC104C":{cie:38,att:96,marks:[12,14,7,6,20]},
+"1BEIT105":{cie:20,att:90,marks:[6,8,4,3,10]},
+"1BSKS106":{cie:44,att:99,marks:[10,12,8,7,19]},
+"1BPOPL107":{cie:28,att:92,marks:[9,10,5,6,17]},
+"1BPRJ158":{cie:52,att:100,marks:[17,19,8,9,25]},
+"1BSK109":{cie:24,att:90,marks:[7,8,4,5,14]},
+"1BPHCSL102":{cie:36,att:95,marks:[11,13,6,6,17]}
+}
+},
+
+/* ===================== ARJUN ===================== */
+"2025CS0154":{
+dob:["21","Aug","2006"],
+name:"ARJUN H",
+subjects:{
+"1BMACS101":{cie:20,att:93,marks:[16,20,8,6,26]},
+"1BPHCS102":{cie:30,att:95,marks:[14,18,7,6,21]},
+"1BCEDCS103":{cie:26,att:90,marks:[9,12,6,5,15]},
+"1BESC104C":{cie:42,att:97,marks:[14,16,8,7,22]},
+"1BEIT105":{cie:24,att:92,marks:[8,10,5,4,14]},
+"1BSKS106":{cie:46,att:100,marks:[11,12,9,8,20]},
+"1BPOPL107":{cie:32,att:94,marks:[10,12,6,6,18]},
+"1BPRJ158":{cie:56,att:100,marks:[18,20,9,10,27]},
+"1BSK109":{cie:22,att:91,marks:[7,9,5,4,13]},
+"1BPHCSL102":{cie:40,att:96,marks:[12,14,7,6,18]}
+}
+},
+
+/* ===================== NAVEEN ===================== */
+"2025CS0389":{
+dob:["27","Jun","2007"],
+name:"NAVEEN KUMAR",
+subjects:{
+"1BMACS101":{cie:10,att:89,marks:[8,10,5,4,12]},
+"1BPHCS102":{cie:26,att:91,marks:[10,14,6,5,18]},
+"1BCEDCS103":{cie:24,att:90,marks:[9,11,5,5,14]},
+"1BESC104C":{cie:34,att:92,marks:[12,13,6,6,17]},
+"1BEIT105":{cie:18,att:89,marks:[6,7,4,3,10]},
+"1BSKS106":{cie:40,att:95,marks:[10,11,8,7,18]},
+"1BPOPL107":{cie:22,att:90,marks:[7,8,4,4,12]},
+"1BPRJ158":{cie:48,att:96,marks:[15,17,7,8,22]},
+"1BSK109":{cie:20,att:89,marks:[6,7,4,3,11]},
+"1BPHCSL102":{cie:32,att:93,marks:[10,11,5,5,15]}
+}
+},
+
+/* ===================== HRISHIK ===================== */
+"2025CS0167":{
+dob:["18","Jun","2007"],
+name:"HRISHIK KM",
+subjects:{
+"1BMACS101":{cie:19,att:92,marks:[15,18,7,6,24]},
+"1BPHCS102":{cie:34,att:95,marks:[16,20,8,7,26]},
+"1BCEDCS103":{cie:27,att:90,marks:[10,12,6,5,16]},
+"1BESC104C":{cie:41,att:96,marks:[14,16,7,7,21]},
+"1BEIT105":{cie:23,att:91,marks:[8,10,5,5,15]},
+"1BSKS106":{cie:47,att:99,marks:[11,12,9,8,20]},
+"1BPOPL107":{cie:31,att:93,marks:[10,11,6,6,17]},
+"1BPRJ158":{cie:54,att:100,marks:[18,19,9,9,26]},
+"1BSK109":{cie:25,att:89,marks:[7,9,5,4,14]},
+"1BPHCSL102":{cie:39,att:97,marks:[12,14,6,7,18]}
+}
+}
+
+/* ===================== END OF STUDENTS ===================== */
+};
+
+let current;
+let subjectChart;
+let overviewChartInstance;
+let attChartInstance;
+
+/* LOGIN */
+function login(){
+let u=username.value.trim();
+let d=day.value;
+let m=month.value;
+let y=year.value;
+
+if(students[u] &&
+students[u].dob[0]==d &&
+students[u].dob[1]==m &&
+students[u].dob[2]==y){
+
+current=students[u];
+loginPage.style.display="none";
+app.classList.remove("hidden");
+
+studentName.innerText=current.name;
+studentUSN.innerText=u;
+
+createTabs();
+loadDashboard();
+showDashboard();
+
+}else{
+error.innerText="Invalid credentials";
+}
+}
+
+/* TABS */
+function createTabs(){
+
+let html = `<button class="tab active" onclick="showDashboard()">HOME</button>`;
+
+for(let code in current.subjects){
+
+let title = subjectNames[code] || "";
+
+html += `
+<button class="tab" onclick="openSubject('${code}',this)">
+<b>${code}</b><br>
+<span style="font-size:11px;color:#666">${title}</span>
+</button>
+`;
+}
+
+tabs.innerHTML = html;
+}
+
+/* DASHBOARD */
+function loadDashboard(){
+
+let labels = Object.keys(current.subjects);
+let cie = labels.map(l=>current.subjects[l].cie);
+let att = labels.map(l=>current.subjects[l].att);
+
+/* destroy old charts if exist */
+if(overviewChartInstance) overviewChartInstance.destroy();
+if(attChartInstance) attChartInstance.destroy();
+
+/* ===== CIE BAR ===== */
+overviewChartInstance = new Chart(overviewChart,{
+type:"bar",
+data:{
+labels,
+datasets:[{
+label:"CIE Marks",
+data:cie,
+backgroundColor:[
+"#7aa6b8","#b7a6b8","#6f9f88","#d9a066",
+"#7f88a6","#c77c8a","#8da5a9","#9fbf7f",
+"#c9a77a","#7aa6b8"
+]
+}]
+},
+options:{
+responsive:true,
+maintainAspectRatio:false,
+plugins:{
+legend:{
+display:true,
+position:"bottom"
+}
+},
+scales:{y:{beginAtZero:true,max:70}}
+}
+});
+
+/* ===== ATTENDANCE RINGS ===== */
+
+const attColors = [
+"#6c9e7a",
+"#7aa6b8",
+"#b7a6b8",
+"#d9a066",
+"#7f88a6",
+"#c77c8a",
+"#8da5a9",
+"#9fbf7f",
+"#c9a77a",
+"#7f9da3"
+];
+
+let datasets=[];
+
+att.forEach((v,i)=>{
+datasets.push({
+label: labels[i],   // subject code
+data:[v,100-v],
+backgroundColor:[attColors[i], "#e6e6e6"],
+rotation:270,
+circumference:180,
+cutout:`${80 - i*4}%`,
+borderWidth:0
+});
+});
+
+attChartInstance = new Chart(attChart,{
+type:"doughnut",
+data:{datasets},
+options:{
+responsive:true,
+maintainAspectRatio:false,
+plugins:{
+legend:{
+display:true,
+position:"bottom",
+labels:{
+boxWidth:12,
+font:{size:11}
+}
+}
+}
+}
+});
+
+/* ===== Attendance Legend ===== */
+let legendHTML = "";
+
+labels.forEach((code,i)=>{
+legendHTML += `
+<div class="legend-item">
+<div class="legend-color" style="background:${attColors[i]}"></div>
+${code}
+</div>
+`;
+});
+
+document.getElementById("attLegend").innerHTML = legendHTML;
+
+}
+
+/* SUBJECT */
+function openSubject(code,btn){
+
+document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+btn.classList.add("active");
+
+dashboard.classList.add("hidden");
+subjectPage.classList.remove("hidden");
+
+let s=current.subjects[code];
+
+faculty.innerText="Faculty Name";
+subjectTitle.innerText=code;
+facultyImg.src="https://i.imgur.com/Z6X4C0N.jpg";
+
+cieBadge.innerText="FINAL CIE: "+s.cie;
+attBadge.innerText="ATTENDANCE: "+s.att+"%";
+
+let maxCIE=code.includes("L")||code.includes("PRJ")?50:100;
+
+infoRow.innerHTML=`
+<span>Current CIE: ${s.cie}/${maxCIE}</span>
+<span>Attendance: ${s.att}%</span>
+`;
+
+if(subjectChart) subjectChart.destroy();
+
+let labels = ["tst1","tst2","qz1","qz2","EL1"];
+let obtained = s.marks;
+let maxMarks = [25,25,10,10,30];
+
+// Static class average (can make dynamic later)
+let classAvg = [12,18,7,9,22];
+
+subjectChart = new Chart(document.getElementById("subjectChart"),{
+type:"bar",
+data:{
+labels:labels,
+datasets:[
+{
+label:"Marks Obtained",
+data:obtained,
+backgroundColor:"#7fb6cc",
+order:2
+},
+{
+label:"Max Marks",
+data:maxMarks,
+backgroundColor:"#e6e6e6",
+order:1
+},
+{
+type:"line",
+label:"Class Average",
+data:classAvg,
+borderColor:"#ff3b00",
+backgroundColor:"#ff3b00",
+borderWidth:2,
+pointRadius:4,
+pointBackgroundColor:"#ff3b00",
+tension:0,
+order:0
+}
+]
+},
+options:{
+responsive:true,
+maintainAspectRatio:false,
+plugins:{
+legend:{
+position:"bottom",
+labels:{boxWidth:14}
+},
+title:{
+display:true,
+text: subjectNames[code] + " ("+code+")",
+font:{size:14}
+},
+tooltip:{enabled:true}
+},
+scales:{
+y:{
+beginAtZero:true,
+max:30,
+ticks:{stepSize:5}
+}
+}
+}
+});
+}
+
+function showDashboard(){
+subjectPage.classList.add("hidden");
+dashboard.classList.remove("hidden");
+}
+</script>
+
+</body>
+</html>
